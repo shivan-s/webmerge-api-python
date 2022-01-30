@@ -15,6 +15,8 @@ SECRET = os.getenv("SECRET")
 
 def main():
     api = DocumentsAPI(key=KEY, secret=SECRET)
+    res = api.delete_document(api.get_documents()[-1]["id"])
+    print(res)
 
     documents = api.get_documents()
     print(documents)
@@ -60,8 +62,7 @@ def main():
 
     # create_res = api.create_document(**data)
 
-
-# print(create_res.json())
+    # print(create_res.json())
 
 
 if __name__ == "__main__":

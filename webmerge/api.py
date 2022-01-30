@@ -14,8 +14,10 @@ logging.basicConfig(
 
 
 class BaseAPI:
-    """
-    This is the base API class
+    """Contains credentials to use in other classes
+
+    References:
+        https://www.webmerge.me/developers
     """
 
     def __init__(self, key: str, secret: str):
@@ -25,10 +27,16 @@ class BaseAPI:
 
 
 class DocumentsAPI(BaseAPI):
-    """
-    Inherits from BaseAPI
+    """Creates an object to perform functions on a Formstack/WebMerge document
 
-    Document related things
+        Inherits from the BaseAPI class
+
+    Args:
+        key (str): supplied key
+        secret (str): supplied secret
+
+    Raises:
+        TODO: need to write this
     """
 
     # create
@@ -69,7 +77,7 @@ class DocumentsAPI(BaseAPI):
         response = requests.post(
             url, headers=headers, data=data, auth=(self.key, self.secret)
         )
-        return response
+        return response.json()
 
     # read
     # TODO: allow ability to search
@@ -126,7 +134,7 @@ class DocumentsAPI(BaseAPI):
         Returns:
             bool: True is delete successful
         """
-        url = self.url + "/api/document/" + document_id
+        url = self.url + "/api/documents/" + document_id
 
         headers = CaseInsensitiveDict()
         headers["Content-Type"] = "application/json"
@@ -134,14 +142,12 @@ class DocumentsAPI(BaseAPI):
         response = requests.delete(
             url, headers=headers, auth=(self.key, self.secret)
         )
-
         if response.status_code == 200:
-            if response.json()["success"] == "1":
-                return True
-            else:
-                return False
+            return bool(response.json()["success"])
+        if response.status_code == 404:
+            return False
         else:
-            raise Exception
+            raise Exception(f"status code: {response.status_code}")
 
     # merge
     def merge_document(
